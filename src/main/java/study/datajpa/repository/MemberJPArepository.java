@@ -46,4 +46,16 @@ public class MemberJPArepository {
                 .setParameter("age", age)
                 .getResultList();
     }
+
+//    public List<Member> findByUsername(String username){
+//        return em.createNamedQuery("Member.findByUsername", Member.class)
+//                .setParameter("username", username)
+//                .getResultList();
+//    }
+        // 쿼리문을 보면 m.username에 user0000name이라는 오타가 존재한다.
+        public List<Member> findByUsername(String username){
+        return em.createQuery("select m from Member where m.user0000name= : username", Member.class)
+                .setParameter("username", username)
+                .getResultList();
+    }
 }
