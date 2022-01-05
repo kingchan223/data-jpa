@@ -82,4 +82,18 @@ class MemberJPArepositoryTest {
         long count2 = memberRepository.count();
         assertThat(count2).isEqualTo(0);
     }
+
+    @Test
+    void findByUsernameAndAgeGreaterThan(){
+        Member member1 = new Member("member1", 10, null);
+        Member member2 = new Member("member2", 13, null);
+        memberJPArepository.save(member1);
+        memberJPArepository.save(member2);
+
+        Member findMember = memberJPArepository.findByUsernameAndAgeGreaterThan("member2", 10).get(0);
+
+        assertThat(findMember).isEqualTo(member2);
+        assertThat(findMember.getAge()).isEqualTo(13);
+        assertThat(findMember.getUsername()).isEqualTo("member2");
+    }
 }

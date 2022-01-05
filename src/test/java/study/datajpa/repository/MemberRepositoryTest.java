@@ -27,4 +27,18 @@ class MemberRepositoryTest {
 //        assertThat(saveMember.getId()).isEqualTo(findMember.getId());
 //        assertThat(member).isEqualTo(findMember);
     }
+
+    @Test
+    void findByUsernameAndAgeGreaterThan(){
+        Member member1 = new Member("member1", 10, null);
+        Member member2 = new Member("member2", 13, null);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        Member findMember = memberRepository.findByUsernameAndAgeGreaterThan("member2", 10).get(0);
+
+        assertThat(findMember).isEqualTo(member2);
+        assertThat(findMember.getAge()).isEqualTo(13);
+        assertThat(findMember.getUsername()).isEqualTo("member2");
+    }
 }
