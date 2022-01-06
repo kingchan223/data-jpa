@@ -115,4 +115,26 @@ class MemberJPArepositoryTest {
         memberJPArepository.save(member1);
         Member findMember = memberJPArepository.findByUsername("member1").get(0);
     }
+
+    @Test
+    void pagingByAgeTest(){
+        int age = 20;
+        int offset = 0;
+        int limit = 3;
+
+        //10살인 멤버 1명
+        Member member10 = new Member("member", 10, null);
+        memberJPArepository.save(member10);
+
+        //20살인 멤버 30명
+        for(int i=0; i<30; i++){
+            Member member = new Member("member"+i, 20, null);
+            memberJPArepository.save(member);
+        }
+        long numOf20Member = memberJPArepository.totalCount(age);
+        assertThat(numOf20Member).isEqualTo(30L);//20살인 멤버 30명 맞나?
+
+        List<Member> members = memberJPArepository.findByPage(age, offset, limit);
+        assertThat(members.size()).isEqualTo(limit);//가져온 페이징 목록 3명의 멤버?
+    }
 }
