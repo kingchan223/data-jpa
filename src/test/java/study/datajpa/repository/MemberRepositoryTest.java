@@ -246,5 +246,22 @@ class MemberRepositoryTest {
                 new MemberDto(m.getId(), m.getUsername(), m.getTeam().getName()));
 
     }
+
+    @Test
+    void bulkUpdateAgeTest(){
+        //given
+        int age = 20;
+        //20살인 멤버 30명
+        for(int i=0; i<30; i++){
+            Member member = new Member("member"+i, i, null);
+            memberRepository.save(member);
+        }
+
+        //when
+        int resultCount = memberRepository.bulkAgePlus(age);
+
+        //then
+        assertThat(resultCount).isEqualTo(10);
+    }
 }
 

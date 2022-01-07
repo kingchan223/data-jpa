@@ -2,8 +2,8 @@ package study.datajpa.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import study.datajpa.entity.Member;
@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
+
 //    Member findByUsername(String username);
     List<Member> findByUsernameAndAgeGreaterThan(String username, int age);
 
@@ -46,4 +47,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Page<Member> findByAge(int age, Pageable pageable);
 
 //    Slice<Member> findByAge(int age, Pageable pageable);//Slice 사용!
+
+//    clearAutomatically=true를 하면 영속성 컨텍스틑 비워준다.
+    @Modifying(clearAutomatically = true) // @Modifying이 있어야 순수 JPA에서 본 executeUpdate를 실행시켜준다.
+    @Query("update Member m set m.age = m.age + 1 where m.age  >= :age")
+    int bulkAgePlus(@Param("age") int age);
 }

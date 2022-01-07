@@ -137,4 +137,21 @@ class MemberJPArepositoryTest {
         List<Member> members = memberJPArepository.findByPage(age, offset, limit);
         assertThat(members.size()).isEqualTo(limit);//가져온 페이징 목록 3명의 멤버?
     }
+
+    @Test
+    void bulkUpdateAgeTest(){
+        //given
+        int age = 20;
+        //20살인 멤버 30명
+        for(int i=0; i<30; i++){
+            Member member = new Member("member"+i, i, null);
+            memberJPArepository.save(member);
+        }
+
+        //when
+        int resultCount = memberJPArepository.bulkAgePlus(age);
+
+        //then
+        assertThat(resultCount).isEqualTo(10);
+    }
 }
