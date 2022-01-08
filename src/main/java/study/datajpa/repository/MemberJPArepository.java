@@ -78,4 +78,7 @@ public class MemberJPArepository {
                 .setParameter("age", age)
                 .executeUpdate();
     }
+
+
+
 }

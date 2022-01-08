@@ -14,6 +14,8 @@ import study.datajpa.entity.Team;
 import study.datajpa.entity.dto.MemberDto;
 
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.awt.print.Pageable;
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +27,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional @Rollback(false)
 @SpringBootTest
 class MemberRepositoryTest {
+
+    @PersistenceContext
+    private EntityManager em;
 
     MemberRepository memberRepository;
     TeamRepository teamRepository;
@@ -263,5 +268,50 @@ class MemberRepositoryTest {
         //then
         assertThat(resultCount).isEqualTo(10);
     }
-}
 
+    @Test
+    void queryBeforeHint() {
+        //given
+        Member member1 = memberRepository.save(new Member("member1", 10, null));
+
+        em.flush();
+        em.clear();
+
+        //when
+        Member findMember = memberRepository.findById(member1.getId()).get();
+        findMember.setUsername("member2");//member1의 이름 수정
+
+        em.flush();//Dirty checking을 하여 바뀐것이 있다면 Update 쿼리를 날린다.
+        /* Dirty checking의 단점은 영속성 컨텍스트에 두 개의 객체를 가지고 있어야 한다는 것이다.*/
+        /* 즉 member1과 member1의 스냅샷을 가지고 있어야 한다. --> 메모리를 더 먹게된다. */
+        /* 하여 개발자가 member 변경은 원하지 않고, 단순히 조회만 원할 때에도 메모리에 두개의 객체가 생기기 때문에*/
+        /* 이는 커다란 단점이라 할 수 있다. */
+    }
+
+    @Test
+    void queryHint() {
+        //given
+        Member member1 = memberRepository.save(new Member("member1", 10, null));
+
+        em.flush();
+        em.clear();
+
+        //when
+        Member findMember = memberRepository.findReadOnlyByUsername("member1");
+        findMember.setUsername("member2");//member1의 이름 수정
+
+        em.flush();
+    }
+
+    @Test
+    void lock() {
+        //given
+        Member member1 = memberRepository.save(new Member("member1", 10, null));
+
+        em.flush();
+        em.clear();
+
+        //when
+        Member findMember = memberRepository.findLockByUsername("member1");
+    }
+}

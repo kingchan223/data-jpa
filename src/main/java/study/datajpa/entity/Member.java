@@ -9,7 +9,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access= AccessLevel.PROTECTED)/*프록시 객체를 위해 protect로 기본 생성자*/
 @Getter @Setter
 @Entity
-public class Member {
+public class  Member {
 
     @Id @GeneratedValue
     @Column(name="member_id")

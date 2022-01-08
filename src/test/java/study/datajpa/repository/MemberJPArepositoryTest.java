@@ -6,7 +6,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.Member;
+import study.datajpa.entity.Team;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,8 +19,13 @@ import static org.assertj.core.api.Assertions.*;
 @SpringBootTest//이거 하나면 스프링 빈을 사용할 수 있다.
 class MemberJPArepositoryTest {
 
+    @PersistenceContext
+    private EntityManager em;
     @Autowired MemberJPArepository memberJPArepository;
     @Autowired MemberRepository memberRepository;
+    @Autowired TeamJPARepository teamJPARepository;
+    @Autowired TeamRepository teamRepository;
+
 
     @Test
     void save() {
@@ -153,5 +161,80 @@ class MemberJPArepositoryTest {
 
         //then
         assertThat(resultCount).isEqualTo(10);
+    }
+
+    @Test
+    void findMemberLazy(){
+
+        //given
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamJPARepository.save(teamA);
+        teamJPARepository.save(teamB);
+
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 10, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        em.flush();
+        em.clear();
+
+        //when
+        List<Member> members = memberRepository.findAll();
+        for (Member member : members){
+            System.out.println("member = " + member.getUsername());
+            System.out.println("member.team = " + member.getTeam().getName());
+        }
+    }
+
+    @Test
+    void findMemberFetch(){
+
+        //given
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamJPARepository.save(teamA);
+        teamJPARepository.save(teamB);
+
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 10, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        em.flush();
+        em.clear();
+
+        //when
+        List<Member> members = memberRepository.findMemberFetchJoin();
+        for (Member member : members){
+            System.out.println("member = " + member.getUsername());
+            System.out.println("member.team = " + member.getTeam().getName());
+        }
+    }
+
+    @Test
+    void findMemberEntityGraph(){
+
+        //given
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamJPARepository.save(teamA);
+        teamJPARepository.save(teamB);
+
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 10, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        em.flush();
+        em.clear();
+
+        //when
+        List<Member> members = memberRepository.findAll();
+        for (Member member : members){
+            System.out.println("member = " + member.getUsername());
+            System.out.println("member.team = " + member.getTeam().getName());
+        }
     }
 }
