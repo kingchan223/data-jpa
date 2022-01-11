@@ -37,11 +37,10 @@ public class MemberController {
         return memberRepository.findAll(pageable).map(MemberDto::new);/*map으로 DTO로 전환*/
     }
 
-    @PostConstruct
-    public void init(){
-        Team team = new Team("ManCity");
-        teamRepository.save(team);
-        for(int i=0; i<100; i++)
-            memberRepository.save(new Member("user"+i, i, team));
-    }
+//    @PostConstruct
+//    public void (){
+//        Team team = new Team("ManCity");
+//        teamRepository.save(team);
+//        for(int i=0; i<100; i++) memberRepository.save(new Member("user"+i, i, team));
+//    }
 }
