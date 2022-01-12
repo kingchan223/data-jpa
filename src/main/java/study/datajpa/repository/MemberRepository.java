@@ -22,6 +22,8 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
 //    @Query(name="Member.findByUsername")
 //    List<Member> findByUsername(@Param("username") String username);
 
+    List<Member> findByUsername(@Param("username") String username);
+
     @Query("select m from Member m where m.username = :username and m.age = :age")
     List<Member> findMember(@Param("username") String username, @Param("age") int age);
 
@@ -72,5 +74,9 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Member findLockByUsername(String username);
+
+
+    List<UsernameOnlyDto> findProjectionsByUsername(@Param("username") String username);
+
 
 }

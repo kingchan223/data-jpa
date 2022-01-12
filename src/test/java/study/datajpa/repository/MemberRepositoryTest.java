@@ -21,7 +21,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 @Transactional @Rollback(false)
 @SpringBootTest
 class MemberRepositoryTest {
@@ -418,4 +417,25 @@ class MemberRepositoryTest {
         //--then--
         assertThat(result.get(0).getUsername()).isEqualTo(m1.getUsername());
     }
+
+    @Test
+    void projections() {
+        //--given--
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1", 0, teamA);
+        Member m2 = new Member("m2", 0, teamA);
+        em.persist(m1);
+        em.persist(m2);
+        em.flush();
+        em.clear();
+
+        //--when--
+        List<UsernameOnlyDto> result = memberRepository.findProjectionsByUsername("m1");
+
+        //--then--
+        System.out.println(result.get(0));
+    }
+
 }
